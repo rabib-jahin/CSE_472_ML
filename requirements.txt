@@ -1,0 +1,3 @@
+gradio==3.14
+diffusers==0.14.0 xformers transformers scipy ftfy accelerate controlnet_aux
+opencv-contrib-python
