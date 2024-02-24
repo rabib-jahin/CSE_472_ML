@@ -1,4 +1,4 @@
-
+#best restoration model
 
 import gradio as gr
 import numpy as np
@@ -15,7 +15,7 @@ import os
 
 device = "cuda"
 
-
+# load control net and stable diffusion v1-5
 controlnet = ControlNetModel.from_pretrained("thepowefuldeez/sd21-controlnet-canny", torch_dtype=torch.float16)
 
 pipe = StableDiffusionControlNetInpaintPipeline.from_pretrained(
@@ -35,16 +35,18 @@ def combine_masks2(mask1, mask2):
     mask2_np = np.array(mask2)
     inverted_mask2_np = np.logical_not(mask2_np)
 
-
+# Combine mask1_np with the inverted mask2_np using logical AND operation
     result_mask = np.logical_and(mask1_np, inverted_mask2_np)
     # final_result = np.logical_or(result_mask, mask1_np)
 
-
+# If you want to convert the result back to integers (0s and 1s):
     final_result_int = result_mask.astype(np.uint8) * 255
 
+# Combine the result_mask with mask2_np using logical OR operation
+    # final_result = np.logical_or(result_mask, mask2_np)
 
-
-
+# If you want to convert the result back to integers (0s and 1s):
+    # combined_mask_int = combined_mask.astype(np.uint8) * 255
  
 
 
@@ -98,7 +100,7 @@ def generate_scratch_mask(input_dict):
     # # Apply dilation to make the lines bigger
     kernel = np.ones((4, 4), np.uint8)
     # mask_image_np = np.array(mask_image)
-    mask_image_np_dilated = cv2.dilate(mask_image_np, kernel, iterations=1)
+    mask_image_np_dilated = cv2.dilate(mask_image_np, kernel, iterations=2)
     mask_image_dilated = Image.fromarray(mask_image_np_dilated)
 
     return  mask_image_dilated  
@@ -185,7 +187,7 @@ with gr.Blocks() as demo:
             generator=generator,
             image=image,
             control_image=result,
-            controlnet_conditioning_scale=0.5,
+            controlnet_conditioning_scale=0.0,
            
             mask_image=combined_mask
         ).images[0]
